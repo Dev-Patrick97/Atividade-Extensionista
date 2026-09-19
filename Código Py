@@ -1,0 +1,459 @@
+import tkinter as tk
+from tkinter import messagebox
+
+
+class QuizAlfabetizacaoDigital:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Aprenda Digital - Quiz Interativo")
+        self.root.geometry("850x680")
+        self.root.configure(bg="#F0F4F8")
+        self.root.resizable(True, True)
+
+        # Configurações globais de estilos e cores
+        self.COR_FUNDO = "#F0F4F8"
+        self.COR_AZUL_ESCURO = "#1E3A8A"
+        self.COR_AZUL_BOTAO = "#2563EB"
+        self.COR_VERDE_ACERTO = "#15803D"
+        self.COR_VERMELHO_ERRO = "#B91C1C"
+        self.COR_TEXTO = "#1F2937"
+
+        self.FONTE_TITULO = ("Arial", 22, "bold")
+        self.FONTE_SUBTITULO = ("Arial", 14, "bold")
+        self.FONTE_PERGUNTA = ("Arial", 16, "bold")
+        self.FONTE_OPCAO = ("Arial", 14)
+        self.FONTE_FEEDBACK = ("Arial", 13, "bold")
+
+        # Base de dados de 15 perguntas organizadas por temas
+        self.perguntas = [
+            {
+                "categoria": "Tema: Ligar e Desligar o Computador",
+                "pergunta": "Qual é a forma correta e segura de desligar o computador?",
+                "opcoes": [
+                    "1. Puxar o cabo de energia direto da tomada",
+                    "2. Clicar no botão 'Iniciar' do Windows e escolher 'Desligar'",
+                    "3. Apenas desligar o monitor e ir embora"
+                ],
+                "correta": 1,
+                "explicacao": "Correto! Clicar no menu Iniciar -> Desligar permite que o sistema guarde seus arquivos em segurança antes de desligar."
+            },
+            {
+                "categoria": "Tema: Pesquisar na Internet",
+                "pergunta": "Para procurar uma receita ou notícia no navegador, onde você deve digitar o que procura?",
+                "opcoes": [
+                    "1. Na barra de pesquisa do seu navegador (como o Google Chrome)",
+                    "2. Na calculadora do computador",
+                    "3. No programa de desenhar (Paint)"
+                ],
+                "correta": 0,
+                "explicacao": "Muito bem! Usamos a barra de pesquisa do navegador (como o Google) para pesquisar qualquer informação na internet."
+            },
+            {
+                "categoria": "Tema: Teclado e Escrita",
+                "pergunta": "Se você errar uma letra enquanto estiver digitando, qual tecla deve apertar para apagar?",
+                "opcoes": [
+                    "1. A tecla de Espaço",
+                    "2. A tecla Enter",
+                    "3. A tecla Backspace (a seta para a esquerda acima do Enter)"
+                ],
+                "correta": 2,
+                "explicacao": "Isso mesmo! A tecla Backspace (com o símbolo de uma seta apontando para a esquerda) apaga a última letra digitada."
+            },
+            {
+                "categoria": "Tema: Navegação Segura e Golpes",
+                "pergunta": "Você recebeu uma mensagem dizendo que ganhou um prêmio em dinheiro, mas pedem a sua senha bancária. O que você faz?",
+                "opcoes": [
+                    "1. Passo a senha imediatamente para receber o prêmio rápido",
+                    "2. Não digito a senha e peço ajuda a uma pessoa de confiança",
+                    "3. Envio a mensagem para todos os meus amigos"
+                ],
+                "correta": 1,
+                "explicacao": "Perfeito! NUNCA informe senhas ou dados pessoais por mensagem. Bancos e empresas sérias não pedem senhas assim."
+            },
+            {
+                "categoria": "Tema: Digitar Endereço de Sites",
+                "pergunta": "Onde digitamos o endereço completo de um site (por exemplo: www.google.com)?",
+                "opcoes": [
+                    "1. Na barra superior de endereços do navegador de internet",
+                    "2. No alto-falante do computador",
+                    "3. No relógio do Windows"
+                ],
+                "correta": 0,
+                "explicacao": "Exatamente! A barra no topo da tela do navegador é usada para digitar o endereço direto dos sites."
+            },
+            {
+                "categoria": "Tema: Criação de Senhas",
+                "pergunta": "Qual destas senhas é a mais segura para proteger suas contas na internet?",
+                "opcoes": [
+                    "1. 123456",
+                    "2. Seu primeiro nome",
+                    "3. Uma combinação de letras e números (Exemplo: Brasil2026)"
+                ],
+                "correta": 2,
+                "explicacao": "Excelente! Senhas fortes devem misturar letras e números para impedir que estranhos adivinhem seus dados."
+            },
+            {
+                "categoria": "Tema: Uso do Mouse",
+                "pergunta": "Para abrir um programa na área de trabalho (tela inicial), o que você normalmente precisa fazer com o mouse?",
+                "opcoes": [
+                    "1. Dar apenas um clique no ícone do programa",
+                    "2. Dar dois cliques rápidos (duplo clique) no ícone",
+                    "3. Segurar o botão direito e arrastar o ícone"
+                ],
+                "correta": 1,
+                "explicacao": "Correto! Para abrir arquivos e programas na área de trabalho do Windows, o padrão é dar dois cliques rápidos (duplo clique)."
+            },
+            {
+                "categoria": "Tema: Uso de E-mail",
+                "pergunta": "Se você precisa enviar um documento importante para o seu médico pela internet, qual a melhor ferramenta usar?",
+                "opcoes": [
+                    "1. Bloco de Notas",
+                    "2. Calculadora",
+                    "3. Correio Eletrônico (E-mail)"
+                ],
+                "correta": 2,
+                "explicacao": "Isso mesmo! O E-mail (ou correio eletrônico) é a ferramenta certa para enviar e receber mensagens e documentos de forma oficial."
+            },
+            {
+                "categoria": "Tema: Notícias Falsas (Fake News)",
+                "pergunta": "Você leu uma notícia chocante no WhatsApp sobre uma nova lei absurda. O que você deve fazer antes de compartilhar?",
+                "opcoes": [
+                    "1. Enviar logo para todos os contatos para avisá-los",
+                    "2. Pesquisar no Google em sites de notícias confiáveis para ver se é verdade",
+                    "3. Apagar o aplicativo do WhatsApp"
+                ],
+                "correta": 1,
+                "explicacao": "Muito bem! Sempre pesquise em sites confiáveis antes de compartilhar. Muitas notícias no WhatsApp são inventadas (Fake News)."
+            },
+            {
+                "categoria": "Tema: Hardware (Partes do Computador)",
+                "pergunta": "Qual parte do computador usamos para movimentar a setinha na tela do monitor?",
+                "opcoes": [
+                    "1. O Teclado",
+                    "2. O Mouse",
+                    "3. O Gabinete (Torre)"
+                ],
+                "correta": 1,
+                "explicacao": "Correto! O mouse é o dispositivo que controla o cursor (a setinha) na tela, permitindo clicar em botões e links."
+            },
+            {
+                "categoria": "Tema: Armazenamento de Arquivos",
+                "pergunta": "Quando você escreve um texto no computador e não quer perdê-lo quando desligar a máquina, o que você deve fazer?",
+                "opcoes": [
+                    "1. Imprimir a tela",
+                    "2. Clicar em 'Salvar' (ou no ícone de disquete) antes de fechar o programa",
+                    "3. Apenas fechar, pois o computador sempre salva tudo sozinho"
+                ],
+                "correta": 1,
+                "explicacao": "Perfeito! É fundamental sempre clicar em 'Salvar' seus arquivos no disco do computador para não perder o trabalho feito."
+            },
+            {
+                "categoria": "Tema: Redes Sociais e Privacidade",
+                "pergunta": "Ao criar um perfil em uma rede social (como Facebook ou Instagram), quem deve poder ver o seu endereço e telefone pessoal?",
+                "opcoes": [
+                    "1. Qualquer pessoa do mundo",
+                    "2. Apenas você (ou ninguém)",
+                    "3. Os amigos dos seus amigos"
+                ],
+                "correta": 1,
+                "explicacao": "Isso aí! Informações sensíveis, como telefone e endereço residencial, devem ficar privadas para sua segurança."
+            },
+            {
+                "categoria": "Tema: Compras na Internet",
+                "pergunta": "Você viu um celular de R$ 5.000 sendo vendido por R$ 500 em um site desconhecido. O que deve pensar?",
+                "opcoes": [
+                    "1. Que é muita sorte e deve comprar na hora via PIX",
+                    "2. Desconfiar que é um golpe, pois a oferta é irreal (boa demais para ser verdade)",
+                    "3. Mandar seus dados de cartão de crédito para a loja reservar o celular"
+                ],
+                "correta": 1,
+                "explicacao": "Excelente! Desconfie sempre de promoções boas demais, especialmente em sites desconhecidos. É um indício forte de golpe."
+            },
+            {
+                "categoria": "Tema: Janelas e Programas",
+                "pergunta": "Qual é o símbolo padrão nos computadores para FECHAR uma janela ou programa que você não está mais usando?",
+                "opcoes": [
+                    "1. Um 'X', geralmente no canto superior da janela",
+                    "2. O sinal de adição (+)",
+                    "3. O ícone de uma impressora"
+                ],
+                "correta": 0,
+                "explicacao": "Correto! O 'X', quase sempre localizado no canto superior direito das janelas no Windows, serve para fechar o programa."
+            },
+            {
+                "categoria": "Tema: Cuidados com Redes Wi-Fi",
+                "pergunta": "Ao usar o Wi-Fi gratuito e aberto de uma praça ou shopping, o que NÃO é recomendado fazer?",
+                "opcoes": [
+                    "1. Ler notícias em um portal",
+                    "2. Acessar a conta do seu banco ou digitar senhas importantes",
+                    "3. Assistir a um vídeo engraçado"
+                ],
+                "correta": 1,
+                "explicacao": "Exatamente! Evite acessar bancos ou digitar senhas em redes Wi-Fi públicas. Por serem abertas, alguém pode roubar seus dados."
+            }
+        ]
+
+        # Controle de estado do Quiz
+        self.indice_pergunta = 0
+        self.pontuacao = 0
+
+        # Inicia o aplicativo na tela de Boas-Vindas
+        self.criar_tela_inicial()
+
+    def limpar_tela(self):
+        """Remove todos os componentes visuais da tela atual."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+    def criar_tela_inicial(self):
+        """Monta a tela de abertura do sistema."""
+        self.limpar_tela()
+
+        container = tk.Frame(self.root, bg=self.COR_FUNDO, padx=30, pady=40)
+        container.pack(expand=True, fill="both")
+
+        lbl_boas_vindas = tk.Label(
+            container,
+            text="🎓 Bem-vindo ao Aprendiz Digital!",
+            font=self.FONTE_TITULO,
+            fg=self.COR_AZUL_ESCURO,
+            bg=self.COR_FUNDO
+        )
+        lbl_boas_vindas.pack(pady=20)
+
+        lbl_instrucoes = tk.Label(
+            container,
+            text="Este jogo vai ajudar você a navegar na internet e usar o computador com segurança!\n\n"
+                 "• Responda às perguntas no seu ritmo.\n"
+                 "• Leia com atenção cada explicação.\n"
+                 "• Não tenha medo de errar: errando também se aprende!",
+            font=self.FONTE_SUBTITULO,
+            fg=self.COR_TEXTO,
+            bg=self.COR_FUNDO,
+            justify="left",
+            wraplength=700
+        )
+        lbl_instrucoes.pack(pady=30)
+
+        btn_iniciar = tk.Button(
+            container,
+            text="🚀 Iniciar o Quiz",
+            font=("Arial", 16, "bold"),
+            bg=self.COR_AZUL_BOTAO,
+            fg="white",
+            activebackground=self.COR_AZUL_ESCURO,
+            activeforeground="white",
+            padx=20,
+            pady=10,
+            cursor="hand2",
+            command=self.iniciar_quiz
+        )
+        btn_iniciar.pack(pady=20)
+
+    def iniciar_quiz(self):
+        """Reinicia variáveis e exibe a primeira pergunta."""
+        self.indice_pergunta = 0
+        self.pontuacao = 0
+        self.exibir_pergunta()
+
+    def exibir_pergunta(self):
+        """Renderiza a pergunta atual na interface."""
+        self.limpar_tela()
+        dados_q = self.perguntas[self.indice_pergunta]
+
+        container = tk.Frame(self.root, bg=self.COR_FUNDO, padx=20, pady=20)
+        container.pack(expand=True, fill="both")
+
+        # Categoria e Progresso
+        lbl_progresso = tk.Label(
+            container,
+            text=f"Pergunta {self.indice_pergunta + 1} de {len(self.perguntas)}",
+            font=("Arial", 12, "bold"),
+            fg="#6B7280",
+            bg=self.COR_FUNDO
+        )
+        lbl_progresso.pack(anchor="w")
+
+        lbl_categoria = tk.Label(
+            container,
+            text=dados_q["categoria"],
+            font=self.FONTE_SUBTITULO,
+            fg=self.COR_AZUL_ESCURO,
+            bg=self.COR_FUNDO
+        )
+        lbl_categoria.pack(anchor="w", pady=(0, 15))
+
+        # Texto da Pergunta
+        lbl_pergunta = tk.Label(
+            container,
+            text=dados_q["pergunta"],
+            font=self.FONTE_PERGUNTA,
+            fg=self.COR_TEXTO,
+            bg=self.COR_FUNDO,
+            justify="left",
+            wraplength=750
+        )
+        lbl_pergunta.pack(anchor="w", pady=(0, 20))
+
+        # Botões de Opções de Resposta
+        self.botoes_opcoes = []
+        for i, opcao_texto in enumerate(dados_q["opcoes"]):
+            btn = tk.Button(
+                container,
+                text=opcao_texto,
+                font=self.FONTE_OPCAO,
+                bg="white",
+                fg=self.COR_TEXTO,
+                activebackground="#E5E7EB",
+                anchor="w",
+                justify="left",
+                padx=15,
+                pady=12,
+                wraplength=700,
+                cursor="hand2",
+                command=lambda idx=i: self.verificar_resposta(idx)
+            )
+            btn.pack(fill="x", pady=6)
+            self.botoes_opcoes.append(btn)
+
+        # Área de Feedback (Explicação de Certo/Errado)
+        self.lbl_feedback = tk.Label(
+            container,
+            text="",
+            font=self.FONTE_FEEDBACK,
+            bg=self.COR_FUNDO,
+            justify="left",
+            wraplength=750
+        )
+        self.lbl_feedback.pack(pady=15, anchor="w")
+
+        # Botão Próxima Pergunta (inicialmente oculto/desativado)
+        self.btn_proxima = tk.Button(
+            container,
+            text="Próxima Pergunta ➔",
+            font=("Arial", 14, "bold"),
+            bg=self.COR_AZUL_BOTAO,
+            fg="white",
+            padx=15,
+            pady=8,
+            cursor="hand2",
+            state="disabled",
+            command=self.avancar_pergunta
+        )
+        self.btn_proxima.pack(anchor="e", pady=10)
+
+    def verificar_resposta(self, opcao_selecionada):
+        """Valida a resposta do usuário, exibe o feedback e atualiza pontuação."""
+        dados_q = self.perguntas[self.indice_pergunta]
+        resposta_correta = dados_q["correta"]
+
+        # Desativa todos os botões de opção para evitar múltiplos cliques
+        for btn in self.botoes_opcoes:
+            btn.config(state="disabled")
+
+        if opcao_selecionada == resposta_correta:
+            self.pontuacao += 1
+            self.botoes_opcoes[opcao_selecionada].config(bg="#DCFCE7", fg=self.COR_VERDE_ACERTO)
+            self.lbl_feedback.config(
+                text=f"✅ {dados_q['explicacao']}",
+                fg=self.COR_VERDE_ACERTO
+            )
+        else:
+            self.botoes_opcoes[opcao_selecionada].config(bg="#FEE2E2", fg=self.COR_VERMELHO_ERRO)
+            self.botoes_opcoes[resposta_correta].config(bg="#DCFCE7", fg=self.COR_VERDE_ACERTO)
+            self.lbl_feedback.config(
+                text=f"❌ Ops! A resposta certa era a número {resposta_correta + 1}.\n💡 Dica: {dados_q['explicacao']}",
+                fg=self.COR_VERMELHO_ERRO
+            )
+
+        # Habilita o botão para avançar
+        self.btn_proxima.config(state="normal")
+
+    def avancar_pergunta(self):
+        """Avança para a próxima pergunta ou exibe o resultado final."""
+        self.indice_pergunta += 1
+        if self.indice_pergunta < len(self.perguntas):
+            self.exibir_pergunta()
+        else:
+            self.exibir_resultado_final()
+
+    def exibir_resultado_final(self):
+        """Exibe a tela final com a pontuação e mensagem motivacional."""
+        self.limpar_tela()
+
+        container = tk.Frame(self.root, bg=self.COR_FUNDO, padx=30, pady=40)
+        container.pack(expand=True, fill="both")
+
+        lbl_fim = tk.Label(
+            container,
+            text="🎉 Parabéns! Você concluiu o Quiz!",
+            font=self.FONTE_TITULO,
+            fg=self.COR_AZUL_ESCURO,
+            bg=self.COR_FUNDO
+        )
+        lbl_fim.pack(pady=15)
+
+        total = len(self.perguntas)
+        lbl_resultado = tk.Label(
+            container,
+            text=f"Você acertou {self.pontuacao} de {total} perguntas.",
+            font=("Arial", 18, "bold"),
+            fg=self.COR_TEXTO,
+            bg=self.COR_FUNDO
+        )
+        lbl_resultado.pack(pady=10)
+
+        # Mensagem motivacional baseada no desempenho
+        if self.pontuacao == total:
+            mensagem = "Sensacional! Você demonstrou excelente conhecimento e já está pronto para navegar na internet com muita segurança!"
+        elif self.pontuacao >= total // 2:
+            mensagem = "Muito bem! Você já aprendeu bastante sobre o mundo digital. Continue praticando para ficar cada vez mais seguro!"
+        else:
+            mensagem = "Foi um ótimo começo! A prática leva à perfeição. Que tal jogar novamente para fixar o aprendizado?"
+
+        lbl_mensagem = tk.Label(
+            container,
+            text=mensagem,
+            font=self.FONTE_SUBTITULO,
+            fg=self.COR_TEXTO,
+            bg=self.COR_FUNDO,
+            justify="center",
+            wraplength=650
+        )
+        lbl_mensagem.pack(pady=20)
+
+        # Botões da tela final
+        frame_botoes = tk.Frame(container, bg=self.COR_FUNDO)
+        frame_botoes.pack(pady=20)
+
+        btn_reiniciar = tk.Button(
+            frame_botoes,
+            text="🔄 Jogar Novamente",
+            font=("Arial", 14, "bold"),
+            bg=self.COR_AZUL_BOTAO,
+            fg="white",
+            padx=15,
+            pady=10,
+            cursor="hand2",
+            command=self.iniciar_quiz
+        )
+        btn_reiniciar.pack(side="left", padx=10)
+
+        btn_sair = tk.Button(
+            frame_botoes,
+            text="❌ Sair do Programa",
+            font=("Arial", 14, "bold"),
+            bg="#9CA3AF",
+            fg="white",
+            padx=15,
+            pady=10,
+            cursor="hand2",
+            command=self.root.destroy
+        )
+        btn_sair.pack(side="left", padx=10)
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = QuizAlfabetizacaoDigital(root)
+    root.mainloop()
